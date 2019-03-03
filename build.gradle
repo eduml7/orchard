@@ -18,6 +18,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
-	compile files('/usr/share/java/RXTXcomm.jar')//-2.2pre2
+	compile files('/usr/share/java/RXTXcomm.jar')
 	
 }

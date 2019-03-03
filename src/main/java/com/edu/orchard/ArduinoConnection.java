@@ -11,7 +11,6 @@ import gnu.io.SerialPortEventListener;
 
 public class ArduinoConnection implements SerialPortEventListener {
 
-	// private OutputStream Output = null;
 	private BufferedReader input = null;
 	SerialPort serialPort;
 	private final String PORT_NAME = "/dev/ttyACM0";
@@ -45,18 +44,9 @@ public class ArduinoConnection implements SerialPortEventListener {
 			serialPort.setSerialPortParams(DATA_RATE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
 					SerialPort.PARITY_NONE);
 
-			// Output = serialPort.getOutputStream(); // Se prepara a Output
-			// //para
-			// enviar datos
-			//Input = serialPort.getInputStream(); // Se prepara input para
-													// //recibir datos
 			input = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
-			serialPort.addEventListener(this); // Se agrega un Event //Listener
-			serialPort.notifyOnDataAvailable(true); // Se indica que se
-													// //notifique al usuario
-													// cuando sea que halla
-													// datos disponibles en //el
-													// puerto serie
+			serialPort.addEventListener(this);
+			serialPort.notifyOnDataAvailable(true);
 		} catch (Exception e) {
 
 			System.exit(1);
