@@ -7,14 +7,7 @@ void setup() {
 void loop()
 {
   int humidity = analogRead(sensorPin);
+  delay(5000);
+  Serial.println(humidity);
 
-  if (humidity < 500)
-  {
-    Serial.print(humidity);
-    Serial.println(" humidity, water please");
-  }
-  delay(1000);
-
-  Serial.print(humidity);
-  Serial.println(" humidity no water needed");
 }

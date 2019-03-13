@@ -1,4 +1,4 @@
-package com.edu.orchard.config;
+package com.edu.orchard.connection;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,7 +10,10 @@ import javax.annotation.PreDestroy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.edu.orchard.service.HumidityService;
 
 import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
@@ -23,6 +26,9 @@ import gnu.io.UnsupportedCommOperationException;
 @Component
 public class ArduinoConnection implements SerialPortEventListener {
 
+	@Autowired
+	private HumidityService humidityService;
+
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	private BufferedReader input;
@@ -33,17 +39,19 @@ public class ArduinoConnection implements SerialPortEventListener {
 
 	@PostConstruct
 	public void connect() {
-		try{
-		CommPortIdentifier port = CommPortIdentifier.getPortIdentifier(PORT_NAME);
-		serialPort = (SerialPort) port.open(this.getClass().getName(), TIME_OUT);
+		try {
+			CommPortIdentifier port = CommPortIdentifier.getPortIdentifier(PORT_NAME);
+			serialPort = (SerialPort) port.open(this.getClass().getName(), TIME_OUT);
 
-		serialPort.setSerialPortParams(DATA_RATE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+			serialPort.setSerialPortParams(DATA_RATE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
+					SerialPort.PARITY_NONE);
 
-		input = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
-		serialPort.addEventListener(this);
-		serialPort.notifyOnDataAvailable(true);
+			input = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
+			serialPort.addEventListener(this);
+			serialPort.notifyOnDataAvailable(true);
 
-		} catch (NoSuchPortException | PortInUseException | IOException | UnsupportedCommOperationException | TooManyListenersException e) {
+		} catch (NoSuchPortException | PortInUseException | IOException | UnsupportedCommOperationException
+				| TooManyListenersException e) {
 			log.error("Connection to serial port failed: {}", e.getMessage(), e);
 		}
 	}
@@ -62,8 +70,11 @@ public class ArduinoConnection implements SerialPortEventListener {
 	public synchronized void serialEvent(SerialPortEvent oEvent) {
 		if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			try {
+
 				String inputLine = input.readLine();
 				log.info(inputLine);
+				humidityService.processHumidityInfo(Integer.parseInt(inputLine));
+
 			} catch (Exception e) {
 				log.error("Error getting info from serial port: {}", e);
 			}
