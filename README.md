@@ -37,3 +37,7 @@ WARNING:  RXTX Version mismatch
         native lib Version = RXTX-2.2pre2
 
 ```
+### Telegram Bots
+
+You have to include this environment variables to get the bot enabled:
+__BOT_ORCHARD_TOKEN__ and __BOT_ORCHARD_USER_NAME__

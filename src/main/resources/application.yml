@@ -1,0 +1,3 @@
+telegram.bots:
+  botToken: ${BOT_ORCHARD_TOKEN}
+  botUserName: ${BOT_ORCHARD_USER_NAME} 
