@@ -11,7 +11,6 @@ import javax.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.edu.orchard.service.HumidityService;
 
@@ -23,8 +22,9 @@ import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 import gnu.io.UnsupportedCommOperationException;
 
-@Component
-public class ArduinoConnection implements SerialPortEventListener {
+//@Component
+@Deprecated
+public class ArduinoSerialConnection implements SerialPortEventListener {
 
 	@Autowired
 	private HumidityService humidityService;

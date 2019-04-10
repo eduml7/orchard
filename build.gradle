@@ -20,5 +20,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'io.projectreactor:reactor-test'
 	compile files('/usr/share/java/RXTXcomm.jar')
+	compile group: 'org.eclipse.paho', name: 'org.eclipse.paho.client.mqttv3', version: '1.2.1'
+	implementation 'org.springframework.boot:spring-boot-starter-integration'
+	compile group: 'org.springframework.integration', name: 'spring-integration-mqtt', version: '5.1.4.RELEASE'
+	
 	
 }
