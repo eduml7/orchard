@@ -15,8 +15,8 @@ import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.messaging.MessageChannel;
 
-@Configuration
-@IntegrationComponentScan
+//@Configuration
+//@IntegrationComponentScan
 @Deprecated
 public class MQTTConfiguration {
 

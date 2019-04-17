@@ -23,6 +23,7 @@ dependencies {
 	compile group: 'org.eclipse.paho', name: 'org.eclipse.paho.client.mqttv3', version: '1.2.1'
 	implementation 'org.springframework.boot:spring-boot-starter-integration'
 	compile group: 'org.springframework.integration', name: 'spring-integration-mqtt', version: '5.1.4.RELEASE'
+	compile group: 'org.telegram', name: 'telegrambotsextensions', version: '4.2'
 	
 	
 }

@@ -19,7 +19,7 @@ public class WaterService {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	public void waterOrchard() throws MqttException {
-		log.info("Water ortchard");
+		log.info("Water orchard");
 		client.connect();
 		MqttMessage message = new MqttMessage();
 		message.setPayload("Please, water the orchard".getBytes());

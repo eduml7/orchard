@@ -1,4 +1,4 @@
-package com.edu.orchard.service;
+package com.edu.orchard.mqtt;
 
 import javax.annotation.PostConstruct;
 
@@ -9,20 +9,24 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
-import com.edu.orchard.bots.ActiveBotHandler;
+import com.edu.orchard.bots.CommandBotHandler;
 
 @Component
-public class ConfigMqttCallback implements MqttCallback {
+public class WaterResponseMqttCallback implements MqttCallback {
 
+	@Value("${telegram.bots.users.admin}")
+	private Long admin;
+	
 	@Autowired
-	@Qualifier("mqttClientConfig")
+	@Qualifier("mqttClientWaterResponse")
 	private MqttClient client;
 
 	@Autowired
-	private ActiveBotHandler activeBotHandler;
+	private CommandBotHandler activeBotHandler;
 
 	@Override
 	public void connectionLost(Throwable cause) {
@@ -33,9 +37,8 @@ public class ConfigMqttCallback implements MqttCallback {
 	public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
 		System.out.println("Message received:\n\t" + new String(mqttMessage.getPayload()));
 		if (activeBotHandler != null)
-			//TODO: resolve chatId Issue 
 			activeBotHandler
-					.execute(new SendMessage().setChatId("******").setText(new String(mqttMessage.getPayload())));
+					.execute(new SendMessage().setChatId(admin).setText(new String(mqttMessage.getPayload())));
 	}
 
 	@Override
@@ -48,7 +51,7 @@ public class ConfigMqttCallback implements MqttCallback {
 		client.setCallback(this);
 		try {
 			client.connect();
-			client.subscribe("home/config/orchard");
+			client.subscribe("home/orchard/water/response");
 		} catch (MqttException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
