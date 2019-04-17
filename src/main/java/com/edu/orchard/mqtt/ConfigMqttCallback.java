@@ -1,8 +1,7 @@
 package com.edu.orchard.mqtt;
 
-import java.util.Set;
-
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -22,7 +21,7 @@ public class ConfigMqttCallback implements MqttCallback {
 
 	@Value("${telegram.bots.users.admin}")
 	private Long admin;
-	
+
 	@Autowired
 	@Qualifier("mqttClientConfig")
 	private MqttClient client;
@@ -39,9 +38,7 @@ public class ConfigMqttCallback implements MqttCallback {
 	public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
 		System.out.println("Message received:\n\t" + new String(mqttMessage.getPayload()));
 		if (activeBotHandler != null)
-			//TODO: resolve chatId Issue 
-			activeBotHandler
-					.execute(new SendMessage().setChatId(admin).setText(new String(mqttMessage.getPayload())));
+			activeBotHandler.execute(new SendMessage().setChatId(admin).setText(new String(mqttMessage.getPayload())));
 	}
 
 	@Override
@@ -55,6 +52,18 @@ public class ConfigMqttCallback implements MqttCallback {
 		try {
 			client.connect();
 			client.subscribe("home/config/orchard");
+		} catch (MqttException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	@PreDestroy
+	private void mqttUnSubscribe() {
+		try {
+			client.disconnect();
+			client.close();
 		} catch (MqttException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

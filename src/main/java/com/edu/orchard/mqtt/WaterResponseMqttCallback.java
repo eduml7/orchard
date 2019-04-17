@@ -1,6 +1,7 @@
 package com.edu.orchard.mqtt;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -52,6 +53,18 @@ public class WaterResponseMqttCallback implements MqttCallback {
 		try {
 			client.connect();
 			client.subscribe("home/orchard/water/response");
+		} catch (MqttException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
+	@PreDestroy
+	private void mqttUnSubscribe() {
+		try {
+			client.disconnect();
+			client.close();
 		} catch (MqttException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
