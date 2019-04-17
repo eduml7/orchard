@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
-import com.edu.orchard.bots.OrchardGangsta;
+import com.edu.orchard.bots.ActiveBotHandler;
 
 @Component
 public class WaterResponseMqttCallback implements MqttCallback {
@@ -22,7 +22,7 @@ public class WaterResponseMqttCallback implements MqttCallback {
 	private MqttClient client;
 
 	@Autowired
-	private OrchardGangsta orchardGangsta;
+	private ActiveBotHandler activeBotHandler;
 
 	@Override
 	public void connectionLost(Throwable cause) {
@@ -32,8 +32,8 @@ public class WaterResponseMqttCallback implements MqttCallback {
 	@Override
 	public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
 		System.out.println("Message received:\n\t" + new String(mqttMessage.getPayload()));
-		if (orchardGangsta != null)
-			orchardGangsta
+		if (activeBotHandler != null)
+			activeBotHandler
 					.execute(new SendMessage().setChatId("******").setText(new String(mqttMessage.getPayload())));
 	}
 

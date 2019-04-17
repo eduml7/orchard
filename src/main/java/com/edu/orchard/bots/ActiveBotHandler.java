@@ -1,5 +1,7 @@
 package com.edu.orchard.bots;
 
+import java.util.Set;
+
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +16,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import com.edu.orchard.service.WaterService;
 
 @Component
-public class OrchardGangsta extends TelegramLongPollingBot {
+public class ActiveBotHandler extends TelegramLongPollingBot {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -24,6 +26,9 @@ public class OrchardGangsta extends TelegramLongPollingBot {
 	@Value("${telegram.bots.botUserName}")
 	private String botUserName;
 
+	@Value("${telegram.bots.users.allowed}")
+	private Set<Long> allowedUsers;
+
 	@Autowired
 	private WaterService waterService;
 
@@ -31,14 +36,18 @@ public class OrchardGangsta extends TelegramLongPollingBot {
 	public void onUpdateReceived(Update update) {
 
 		try {
-			if (update.getMessage().getText().contains("regar")) {
-				waterService.waterOrchard();
-				execute(new SendMessage().setChatId(update.getMessage().getChatId())
-						.setText("Starting watering the orchard ..."));
+			if (allowedUsers.contains(update.getMessage().getChatId())) {
+				if (update.getMessage().getText().contains("regar")) {
+					waterService.waterOrchard();
+					execute(new SendMessage().setChatId(update.getMessage().getChatId())
+							.setText("Starting watering the orchard ..."));
+				} else {
+					execute(new SendMessage().setChatId(update.getMessage().getChatId())
+							.setText("Sorry, I don't understand"));
+				}
 			} else {
-
-				execute(new SendMessage().setChatId(update.getMessage().getChatId()).setText("Fuck you"));
-
+				execute(new SendMessage().setChatId(update.getMessage().getChatId())
+						.setText("You are not allowed to talk to me, sorry"));
 			}
 		} catch (TelegramApiException | MqttException e) {
 			log.error("Error trying to water the orchard", e);
