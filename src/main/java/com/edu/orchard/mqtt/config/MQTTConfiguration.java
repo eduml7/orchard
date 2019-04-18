@@ -1,4 +1,4 @@
-package com.edu.orchard.config;
+package com.edu.orchard.mqtt.config;
 
 import javax.websocket.MessageHandler;
 
