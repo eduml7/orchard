@@ -9,6 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
+import com.edu.orchard.auth.Securized;
 import com.edu.orchard.service.WaterService;
 
 public class WaterCommand extends ManCommand {
@@ -23,6 +24,7 @@ public class WaterCommand extends ManCommand {
 	}
 
 	@Override
+	//@Securized
 	public void execute(AbsSender absSender, User user, Chat chat, String[] arguments) {
 		try {
 			log.info("Watering the orchard ...");

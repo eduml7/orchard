@@ -11,6 +11,7 @@ import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingC
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.helpCommand.HelpCommand;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import com.edu.orchard.auth.Securized;
 import com.edu.orchard.bots.commands.WaterCommand;
 
 @Component
@@ -29,6 +30,7 @@ public class CommandBotHandler extends TelegramLongPollingCommandBot {
 	}
 
 	@Override
+	//@Securized
 	public void processNonCommandUpdate(Update update) {
 		// Nothing to do here
 		log.info("PRUEBATORIDAS");
