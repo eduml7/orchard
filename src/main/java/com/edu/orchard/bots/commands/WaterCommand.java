@@ -24,7 +24,7 @@ public class WaterCommand extends ManCommand {
 	}
 
 	@Override
-	//@Securized
+	@Securized
 	public void execute(AbsSender absSender, User user, Chat chat, String[] arguments) {
 		try {
 			log.info("Watering the orchard ...");

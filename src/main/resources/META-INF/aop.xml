@@ -1,0 +1,8 @@
+<aspectj>
+    <aspects>
+        <aspect name="com.edu.orchard.auth.AuthorizationAspect"/>
+        <weaver options="-verbose -showWeaveInfo">
+            <include within="com.edu.orchard.*"/>
+        </weaver>
+    </aspects>
+</aspectj>
