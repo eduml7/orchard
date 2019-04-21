@@ -41,3 +41,7 @@ WARNING:  RXTX Version mismatch
 
 You have to include this environment variables to get the bot enabled:
 __BOT_ORCHARD_TOKEN__ and __BOT_ORCHARD_USER_NAME__
+
+### Gradle & aspectj
+
+There is an issue with __gradle aspects plugin__ and __aspect__ that make it not working in some versions. With gradle 5.4 works like a charm
