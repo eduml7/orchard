@@ -3,4 +3,4 @@ telegram.bots:
   botUserName: ${BOT_ORCHARD_USER_NAME}
   users:
     admin: ${BOT_ORCHARD_ADMIN_USER}
-    allowed: '${BOT_ORCHARD_ALLOWED_USERS}, ${telegram.bots.users.admin}' 
+    allowed: ${BOT_ORCHARD_ALLOWED_USERS}
