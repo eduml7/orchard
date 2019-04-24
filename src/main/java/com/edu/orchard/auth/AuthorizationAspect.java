@@ -26,12 +26,9 @@ public class AuthorizationAspect {
 
 	@Around("com.edu.orchard.auth.config.JoinPointConfig.botAuthUserMessagingExecution()")
 	public void before(ProceedingJoinPoint joinPoint) throws Throwable {
-		Object[] args = joinPoint.getArgs();
 
-		Optional<Long> chatId = getChatId(args);
-		System.out.println(chatId.toString());
-		if (chatId.isPresent())
-			System.out.println(chatId.get());
+		Optional<Long> chatId = getChatId(joinPoint.getArgs());
+
 		if (chatId.isPresent() && allowedUsers.contains(chatId.get())) {
 			joinPoint.proceed();
 		} else {
