@@ -33,7 +33,8 @@ public class AuthorizationAspect {
 			joinPoint.proceed();
 		} else {
 			commandBotHandler.execute(
-					new SendMessage().setChatId(chatId.toString()).setText("You are not allowed to talk to me, sorry"));
+					new SendMessage().setChatId(chatId.get().toString())
+					.setText("You are not allowed to talk to me, sorry"));
 		}
 	}
 
