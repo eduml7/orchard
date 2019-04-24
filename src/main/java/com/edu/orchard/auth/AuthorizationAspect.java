@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
+import org.telegram.telegrambots.meta.api.objects.Update;
 
 import com.edu.orchard.bots.CommandBotHandler;
 
@@ -27,14 +28,29 @@ public class AuthorizationAspect {
 	public void before(ProceedingJoinPoint joinPoint) throws Throwable {
 		Object[] args = joinPoint.getArgs();
 
-		Optional<Long> chatId = Arrays.stream(args).filter(ar -> ar instanceof Chat).map(ar -> ((Chat) ar).getId())
-				.findFirst();
-
-		if (allowedUsers.contains(chatId.get())) {
+		Optional<Long> chatId = getChatId(args);
+		System.out.println(chatId.toString());
+		if (chatId.isPresent())
+			System.out.println(chatId.get());
+		if (chatId.isPresent() && allowedUsers.contains(chatId.get())) {
 			joinPoint.proceed();
 		} else {
-			commandBotHandler.execute(new SendMessage().setChatId(chatId.get().toString())
-					.setText("You are not allowed to talk to me, sorry"));
+			commandBotHandler.execute(
+					new SendMessage().setChatId(chatId.toString()).setText("You are not allowed to talk to me, sorry"));
 		}
+	}
+
+	private <T> Optional<Long> getChatId(T[] args) {
+		return Arrays.stream(args)
+				.filter(ar -> ar instanceof Chat || ar instanceof Update)
+				.map(ar -> {
+					if (ar instanceof Chat) {
+						return Optional.of(((Chat) ar).getId());
+					} else {
+						return Optional.of(((Update) ar).getMessage().getChat().getId());
+					}
+				})
+				.findFirst()
+				.orElse(Optional.empty());
 	}
 }
