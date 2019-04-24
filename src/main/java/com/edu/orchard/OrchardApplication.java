@@ -14,22 +14,15 @@ public class OrchardApplication {
 		ApiContextInitializer.init();
 		SpringApplication.run(OrchardApplication.class, args);
 	}
-
-	@Bean
-	public MqttClient mqttClientConfig() throws MqttException {
-		MqttClient client = new MqttClient("tcp://localhost:1883", MqttClient.generateClientId());
-		return client;
-	}
+//
+//	@Bean
+//	public MqttClient mqttClientConfig() throws MqttException {
+//		MqttClient client = new MqttClient("tcp://localhost:1883", MqttClient.generateClientId());
+//		return client;
+//	}
 	
 	@Bean
 	public MqttClient mqttClientWaterResponse() throws MqttException {
-		MqttClient client = new MqttClient("tcp://localhost:1883", MqttClient.generateClientId());
-		return client;
-	}
-	
-	//TODO: prototype or factory
-	@Bean
-	public MqttClient mqttClientWater() throws MqttException {
 		MqttClient client = new MqttClient("tcp://localhost:1883", MqttClient.generateClientId());
 		return client;
 	}
