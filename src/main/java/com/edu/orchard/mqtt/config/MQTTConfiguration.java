@@ -1,55 +1,88 @@
 package com.edu.orchard.mqtt.config;
 
-import javax.websocket.MessageHandler;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.h2.H2ConsoleProperties.Settings;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
+import org.springframework.integration.dsl.IntegrationFlow;
+import org.springframework.integration.dsl.IntegrationFlows;
+import org.springframework.integration.endpoint.MessageProducerSupport;
 import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
+import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
 import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
+import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageHandler;
 
-//@Configuration
-//@IntegrationComponentScan
-@Deprecated
+@Configuration
 public class MQTTConfiguration {
 
-//	@Autowired
-//	private Settings settings;
-//	@Autowired
-//	private DevMqttMessageListener messageListener;
-//
-//	@Bean
-//	MqttPahoClientFactory mqttClientFactory() {
-//		DefaultMqttPahoClientFactory clientFactory = new DefaultMqttPahoClientFactory();
-//		clientFactory.setServerURIs(settings.getMqttBrokerUrl());
-//		clientFactory.setUserName(settings.getMqttBrokerUser());
-//		clientFactory.setPassword(settings.getMqttBrokerPassword());
-//		return clientFactory;
-//	}
-//
-//	@Bean
-//	MessageChannel mqttOutboundChannel() {
-//		return new DirectChannel();
-//	}
-//
-//	@Bean
-//	@ServiceActivator(inputChannel = "mqttOutboundChannel")
-//	public MessageHandler mqttOutbound() {
-//		MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler("dev-client-outbound", mqttClientFactory());
-//		messageHandler.setAsync(true);
-//		messageHandler.setDefaultTopic(settings.getMqttPublishTopic());
-//		return messageHandler;
-//	}
-//
-//	@MessagingGateway(defaultRequestChannel = "mqttOutboundChannel")
-//	public interface DeviceGateway {
-//		void sendToMqtt(String payload);
-//	}
+	@Bean
+	MqttPahoClientFactory mqttClientFactory() {
+		String[] conn = { "tcp://localhost:1883" };
+		MqttConnectOptions config = new MqttConnectOptions();
+		config.setServerURIs(conn);
+		DefaultMqttPahoClientFactory clientFactory = new DefaultMqttPahoClientFactory();
+		clientFactory.setConnectionOptions(config);
+		// To avoid .lck files
+		clientFactory.setPersistence(new MemoryPersistence());
+		return clientFactory;
+	}
+
+	@Bean
+	MessageChannel mqttOutboundChannel() {
+		return new DirectChannel();
+	}
+
+	@Bean
+	@ServiceActivator(inputChannel = "mqttOutboundChannel")
+	public MessageHandler mqttOutbound() {
+		MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(MqttClient.generateClientId(),
+				mqttClientFactory());
+		messageHandler.setAsync(true);
+		messageHandler.setDefaultTopic("home/orchard/water");
+		return messageHandler;
+	}
+
+	@MessagingGateway(defaultRequestChannel = "mqttOutboundChannel")
+	public interface DeviceGateway {
+		void sendToMqtt(String payload);
+	}
+
+	@Bean
+	public MessageProducerSupport mqttInboundConfig() {
+		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
+				MqttClient.generateClientId(), mqttClientFactory(), "home/config/orchard");
+		adapter.setCompletionTimeout(5000);
+		adapter.setConverter(new DefaultPahoMessageConverter());
+		adapter.setQos(1);
+		return adapter;
+	}
+
+	@Bean
+	public IntegrationFlow mqttInFlow() {
+		return IntegrationFlows.from(mqttInboundConfig()).transform(p -> p).handle("configMqttCallback", "messageArrived")
+				.get();
+	}
+
+	@Bean
+	public MessageProducerSupport mqttInboundWaterResponse() {
+		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
+				MqttClient.generateClientId(), mqttClientFactory(), "home/orchard/water/response");
+		adapter.setCompletionTimeout(5000);
+		adapter.setConverter(new DefaultPahoMessageConverter());
+		adapter.setQos(1);
+		return adapter;
+	}
+
+	@Bean
+	public IntegrationFlow mqttInFlowWaterResponse() {
+		return IntegrationFlows.from(mqttInboundWaterResponse()).transform(p -> p)
+				.handle("waterResponseMqttCallback", "messageArrived").get();
+	}
 }

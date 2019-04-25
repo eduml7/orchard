@@ -1,73 +1,27 @@
 package com.edu.orchard.mqtt;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.integration.annotation.ServiceActivator;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import com.edu.orchard.bots.CommandBotHandler;
 
 @Component
-public class ConfigMqttCallback implements MqttCallback {
+public class ConfigMqttCallback {
 
 	@Value("${telegram.bots.users.admin}")
 	private Long admin;
 
 	@Autowired
-	@Qualifier("mqttClientConfig")
-	private MqttClient client;
-
-	@Autowired
 	private CommandBotHandler activeBotHandler;
 
-	@Override
-	public void connectionLost(Throwable cause) {
-		System.out.println("Connection to MQTT broker lost!");
+	@ServiceActivator
+	public void messageArrived(@Payload String mqttMessage) throws TelegramApiException {
+		activeBotHandler.execute(new SendMessage().setChatId(admin).setText(new String(mqttMessage)));
 	}
 
-	@Override
-	public void messageArrived(String topic, MqttMessage mqttMessage) throws Exception {
-		System.out.println("Message received:\n\t" + new String(mqttMessage.getPayload()));
-		if (activeBotHandler != null)
-			activeBotHandler.execute(new SendMessage().setChatId(admin).setText(new String(mqttMessage.getPayload())));
-	}
-
-	@Override
-	public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-		// not used in this example
-	}
-
-	@PostConstruct
-	private void mqttSubscribe() {
-		client.setCallback(this);
-		try {
-			client.connect();
-			client.subscribe("home/config/orchard");
-		} catch (MqttException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
-	@PreDestroy
-	private void mqttUnSubscribe() {
-		try {
-			client.disconnect();
-			client.close();
-		} catch (MqttException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
 }
