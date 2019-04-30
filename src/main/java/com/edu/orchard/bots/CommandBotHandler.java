@@ -14,6 +14,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import com.edu.orchard.auth.Securized;
+import com.edu.orchard.bots.commands.PhotoCommand;
 import com.edu.orchard.bots.commands.WaterCommand;
 
 @Component
@@ -26,6 +27,9 @@ public class CommandBotHandler extends TelegramLongPollingCommandBot {
 
 	@Autowired
 	private WaterCommand waterCommand;
+	
+	@Autowired
+	private PhotoCommand photoCommand;
 
 	public CommandBotHandler(@Value("${telegram.bots.botUserName}") String botUsername) {
 		super(botUsername);
@@ -52,6 +56,7 @@ public class CommandBotHandler extends TelegramLongPollingCommandBot {
 	@PostConstruct
 	public void registerCommands() {
 		register(new HelpCommand());
+		register(photoCommand);
 		register(waterCommand);
 	}
 

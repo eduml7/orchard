@@ -85,4 +85,51 @@ public class MQTTConfiguration {
 		return IntegrationFlows.from(mqttInboundWaterResponse()).transform(p -> p)
 				.handle("waterResponseMqttCallback", "messageArrived").get();
 	}
+	
+	@Bean
+	MessageChannel mqttInputChannel() {
+		return new DirectChannel();
+	}
+
+	@Bean
+	public MessageProducerSupport inbound() {
+		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
+				MqttClient.generateClientId(), mqttClientFactory(), "home/orchard/watcher/photo");
+		adapter.setCompletionTimeout(5000000);
+	    DefaultPahoMessageConverter converter = new DefaultPahoMessageConverter();
+	    converter.setPayloadAsBytes(true);
+	    
+	    adapter.setConverter(converter);
+		adapter.setQos(1);
+
+		return adapter;
+	}
+	
+	@Bean
+	public IntegrationFlow mqttinbound() {
+		return IntegrationFlows.from(inbound())
+				.handle("imageReceivedMqttCallback", "messageArrived").get();
+	}
+	
+	@Bean
+	MessageChannel PhotoChannel() {
+		return new DirectChannel();
+	}
+
+	@Bean
+	@ServiceActivator(inputChannel = "photoChannel")
+	public MessageHandler mqttOutgggbound() {
+		MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(MqttClient.generateClientId(),
+				mqttClientFactory());
+		messageHandler.setAsync(true);
+		messageHandler.setDefaultTopic("home/orchard/watcher");
+		return messageHandler;
+	}
+
+	@MessagingGateway(defaultRequestChannel = "photoChannel")
+	public interface Gateway {
+		void sendToMqtt(String payload);
+	}
+
+
 }
