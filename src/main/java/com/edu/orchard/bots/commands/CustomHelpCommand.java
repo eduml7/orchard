@@ -12,6 +12,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import com.edu.orchard.auth.Securized;
 
 public class CustomHelpCommand extends HelpCommand {
+	
+	private static final String PARSE_MODE_HTML = "HTML"; 
 
 	@Override
 	@Securized
@@ -23,14 +25,14 @@ public class CustomHelpCommand extends HelpCommand {
 				IBotCommand command = registry.getRegisteredCommand(arguments[0]);
 				String reply = getManText(command);
 				try {
-					absSender.execute(new SendMessage(chat.getId(), reply).setParseMode("HTML"));
+					absSender.execute(new SendMessage(chat.getId(), reply).setParseMode(PARSE_MODE_HTML));
 				} catch (TelegramApiException e) {
 					e.printStackTrace();
 				}
 			} else {
 				String reply = getHelpText(registry);
 				try {
-					absSender.execute(new SendMessage(chat.getId(), reply).setParseMode("HTML"));
+					absSender.execute(new SendMessage(chat.getId(), reply).setParseMode(PARSE_MODE_HTML));
 				} catch (TelegramApiException e) {
 					e.printStackTrace();
 				}

@@ -7,6 +7,8 @@ import java.util.Set;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -17,6 +19,8 @@ import com.edu.orchard.bots.CommandBotHandler;
 
 @Aspect
 public class AuthorizationAspect {
+	
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	@Value("${telegram.bots.users.allowed}")
 	private Set<Long> allowedUsers;
@@ -32,6 +36,7 @@ public class AuthorizationAspect {
 		if (chatId.isPresent() && allowedUsers.contains(chatId.get())) {
 			joinPoint.proceed();
 		} else {
+			log.info("This guy with chatId {} tried to talk to me and is not allowed!", chatId.get());
 			commandBotHandler.execute(
 					new SendMessage().setChatId(chatId.get().toString())
 					.setText("You are not allowed to talk to me, sorry"));

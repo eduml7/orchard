@@ -11,10 +11,10 @@ import com.edu.orchard.mqtt.config.MQTTConfiguration.DeviceGateway;
 @Service
 public class WaterServiceImpl implements WaterService {
 
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	
 	@Autowired
 	private DeviceGateway deviceGateway;
-
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
 	public void waterOrchard() throws MqttException {
 		log.info("Water orchard");
