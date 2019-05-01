@@ -8,12 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
-import org.telegram.telegrambots.extensions.bots.commandbot.commands.helpCommand.HelpCommand;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import com.edu.orchard.auth.Securized;
+import com.edu.orchard.bots.commands.CustomHelpCommand;
 import com.edu.orchard.bots.commands.PhotoCommand;
 import com.edu.orchard.bots.commands.WaterCommand;
 
@@ -55,7 +55,7 @@ public class CommandBotHandler extends TelegramLongPollingCommandBot {
 
 	@PostConstruct
 	public void registerCommands() {
-		register(new HelpCommand());
+		register(new CustomHelpCommand());
 		register(photoCommand);
 		register(waterCommand);
 	}
