@@ -32,7 +32,7 @@ public class ImageReceivedMqttCallback {
 	@ServiceActivator
 	@TimeToLive
 	public Set<Message> messageArrived(@Payload byte[] mqttMessage) {
-		
+		log.info("Image received");
 		Set<Message> messageList = new HashSet<Message>();
 		
 		allowedUsers.stream().forEach(chatId -> {
@@ -43,6 +43,7 @@ public class ImageReceivedMqttCallback {
 					new ByteArrayInputStream(mqttMessage));
 			try {
 				messageList.add(commandBotHandler.execute(sendPhotoRequest));
+				log.info("Image sent");
 			} catch (TelegramApiException e) {
 				log.error("Something happened trying to send the image: {}", e);
 			}
