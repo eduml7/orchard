@@ -90,7 +90,7 @@ public class MQTTConfiguration {
 	MessageChannel mqttInputChannel() {
 		return new DirectChannel();
 	}
-
+	//TODO: review if request/response could be handles in one flow
 	@Bean
 	public MessageProducerSupport inbound() {
 		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
@@ -98,7 +98,6 @@ public class MQTTConfiguration {
 		adapter.setCompletionTimeout(5000000);
 	    DefaultPahoMessageConverter converter = new DefaultPahoMessageConverter();
 	    converter.setPayloadAsBytes(true);
-	    
 	    adapter.setConverter(converter);
 		adapter.setQos(1);
 
@@ -108,7 +107,8 @@ public class MQTTConfiguration {
 	@Bean
 	public IntegrationFlow mqttinbound() {
 		return IntegrationFlows.from(inbound())
-				.handle("imageReceivedMqttCallback", "messageArrived").get();
+				.handle("imageReceivedMqttCallback", "messageArrived")
+				.nullChannel();
 	}
 	
 	@Bean
@@ -118,7 +118,7 @@ public class MQTTConfiguration {
 
 	@Bean
 	@ServiceActivator(inputChannel = "photoChannel")
-	public MessageHandler mqttOutgggbound() {
+	public MessageHandler mqttImageOutbound() {
 		MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(MqttClient.generateClientId(),
 				mqttClientFactory());
 		messageHandler.setAsync(true);
@@ -130,6 +130,5 @@ public class MQTTConfiguration {
 	public interface Gateway {
 		void sendToMqtt(String payload);
 	}
-
 
 }
