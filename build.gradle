@@ -29,12 +29,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'io.projectreactor:reactor-test'
 	compile files('/usr/share/java/RXTXcomm.jar')
 	compile group: 'org.eclipse.paho', name: 'org.eclipse.paho.client.mqttv3', version: '1.2.1'
 	implementation 'org.springframework.boot:spring-boot-starter-integration'
 	compile group: 'org.springframework.integration', name: 'spring-integration-mqtt', version: '5.1.4.RELEASE'
 	compile group: 'org.telegram', name: 'telegrambotsextensions', version: '4.2'
+	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.10'
 	compile 'org.aspectj:aspectjrt:1.9.3'
 	compile 'org.aspectj:aspectjweaver:1.9.3'
 	

@@ -130,5 +130,25 @@ public class MQTTConfiguration {
 	public interface Gateway {
 		void sendToMqtt(String payload);
 	}
+	
+	@Bean
+	MessageChannel MotionDetectionChannel() {
+		return new DirectChannel();
+	}
+
+	@Bean
+	@ServiceActivator(inputChannel = "motionDetectionChannel")
+	public MessageHandler motionDetectionOutbound() {
+		MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(MqttClient.generateClientId(),
+				mqttClientFactory());
+		messageHandler.setAsync(true);
+		messageHandler.setDefaultTopic("home/orchard/motion_detection");
+		return messageHandler;
+	}
+
+	@MessagingGateway(defaultRequestChannel = "motionDetectionChannel")
+	public interface MotionDetectionGateway {
+		void sendToMqtt(String payload);
+	}
 
 }
